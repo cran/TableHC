@@ -1,0 +1,80 @@
+---
+title: "Discriminating Frequency Counts Tables using Higher Criticism"
+author: "Alon Kipnis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Discriminating Tables using Higher Criticism}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This package implements an adpatation of the Higher-Criticism (HC) test to 
+discriminate two frequency counts (one-way) tables footnotes^[See David Donoho and Alon Kipnis *Higher Criticism for Discriminating Word-Frequency Tables and Testing Authorship* (2019)].
+
+The package consists of two main functions:
+- *tables.pvals* -- for comuting P-values of each feature in the two tables.
+- *HC.vals* -- for comuting the HC score of the P-values.
+
+A third function *tables.HC* combines the two functions above so that the HC score of the two tables is obtained using a single function call.
+
+--- 
+## Example: 
+
+```
+text1 = "Should I stay or should I go ?"
+text2 = "I should stay . I should not go !"
+tb1 = table(strsplit(tolower(text1),' '))
+tb2 = table(strsplit(tolower(text2),' '))
+pv = tables.pval(tb1,tb2)
+
+print(pv$pv)
+> [1] 1.0000 1.0000 0.2304 1.0000 1.0000 1.0000     NA 0.1936     NA
+
+print(pv$Var1)
+> go i or say should stay you and not
+
+HC.vals(pv$pv)
+> $HC
+> 0.323954762194625
+> $HC.star
+> 0.323954762194625
+> $p
+> 0.2304
+> $p.star
+> 0.2304
+```
+
+## Example 2
+```
+n = 1000  #number of features
+N = 10*n  #number of observations
+
+seq = seq(1,n)
+P = 1 / seq  #sample from Zipf law distribution
+P = P / sum(P)
+tb1 = data.frame(Feature = seq(1,n),  # sample 1
+      Freq = rmultinom(n = 1, prob = P, size = 10*n))
+
+k = 0.1*n # nuber of features to change
+seq[sample(seq,k)] <- seq[sample(seq,k)] 
+Q = 1 / seq 
+Q = Q / sum(Q)  
+
+tb2 = data.frame(Feature = seq(1,n), # sample 2
+      Freq = rmultinom(n = 1, prob = Q, size = 10*n))
+
+PV = tables.pval(tb1, tb2)  #compute P-values
+
+HC.vals(PV$pv)  # HC test
+
+# can also test using a single function call
+tables.HC(tb1,tb2) 
+```

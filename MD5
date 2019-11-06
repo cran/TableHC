@@ -1,0 +1,16 @@
+50e90542220517fc2f42f73e16ec72af *DESCRIPTION
+2e323bc3a7a5a39fed59047dd7814f5f *LICENSE
+2085d60fa9613de0d7f5c0197153ad89 *NAMESPACE
+614165935fa0455fcdb92369553bb118 *NEWS.md
+c97b68469c0caa366002680c1e73ed7d *R/TableHC.R
+fae178d338099c4cdca22fdc85a76f5b *README.md
+dd3710dd8adc1b6f458f724e692e45f0 *build/vignette.rds
+bbc07ec72cddb8d28f1c2a7ab322f031 *inst/doc/my-vignette.R
+58329adfb71c3eda56202088b3a8f969 *inst/doc/my-vignette.Rmd
+bb51e60b18e065aac5d47c4ef677ed4c *inst/doc/my-vignette.html
+223c5348537ede08261ee267ec538571 *man/HC.vals.Rd
+f52fac2fd52006921eaf64b9492aba80 *man/tables.HC.Rd
+92fd718446f987a7668b3b758eae0afa *man/tables.pval.Rd
+b1681fae0078535368720958e08a47e4 *tests/testthat.R
+d543a3c5e13d0e1616cb0561c2e0bbb7 *tests/testthat/testthat.R
+58329adfb71c3eda56202088b3a8f969 *vignettes/my-vignette.Rmd
