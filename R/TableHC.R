@@ -16,31 +16,42 @@
 #'  \code{p.star} -- p-value attaining \code{HC.star}
 #' 
 #' @examples
-#' text1 = "But our fish said, No ! No ! Make that cat go away ! 
-#'            Tell that Cat in the Hat You do NOT want to play . 
-#'            He should not be here . He should not be about . 
-#'          He should not be here When your mother is out !"
-#' text2 = "Now ! Now ! Have no fear . Have no fear! said the cat . 
-#'            My tricks are not bad , Said the Cat in the Hat . Why , 
-#'             we can have Lots of good fun, if you wish, with a game
-#'              that I call UP - UP - UP with a fish !"
+#' text1 = "On the day House Democrats opened an impeachment inquiry of 
+#' President Trump last week, Pete Buttigieg was being grilled by Iowa
+#' voters on other subjects: how to loosen the grip of the rich on government, 
+#' how to restore science to policymaking, how to reduce child poverty. At an
+#' event in eastern Iowa, a woman rose to say that her four adult children
+#' were `stuck' in life, unable to afford what she had in the 1980s when a 
+#' $10-an-hour job paid for rent, utilities and an annual vacation."
+#'
+#' text2 = "How can the federal government help our young people that want to
+#' do whats right and to get to those things that their parents worked so hard
+#' for? the voter asked. This is the conversation Mr. Buttigieg wants to have. 
+#' Boasting a huge financial war chest but struggling in the polls, Mr.
+#' Buttigieg is now staking his presidential candidacy on Iowa, and particularly
+#' on connecting with rural white voters who want to talk about personal
+#' concerns more than impeachment. In doing so, Mr. Buttigieg is also trying to
+#' show how Democrats can win back counties that flipped from Barack Obama to 
+#' Donald Trump in 2016 — there are more of them in Iowa than any other state — 
+#' by focusing, he said, on “the things that are going to affect folks’ lives in
+#' a concrete way."
 #'
 #' tb1 = table(strsplit(tolower(text1),' '))
 #' tb2 = table(strsplit(tolower(text2),' '))
-#' pv = tables.pval(tb1,tb2)
+#' pv = two.sample.pvals(tb1,tb2)
 #' HC.vals(pv$pv)
 #'
 #' @export
-tables.HC = function(tb1,tb2, alpha = 0.45, stbl = TRUE) {
-    pv = tables.pval(tb1,tb2)
+two.sample.HC = function(tb1,tb2, alpha = 0.45, stbl = TRUE) {
+    pv = two.sample.pvals(tb1,tb2)
     HC.vals(pv$pv, alpha = alpha, stbl = stbl)
 }
 
-#' Binomial p-values of Two-Tables
+#' Feature-by-feature exact binomial test between two tables
 #' @description
-#' Align tables and compute p-values of features using a 
-#' binomial allocation model. Use outer mergeing and fill
-#' missing values with zeros. 
+#' Align tables and use an exact binomial test (binom.test)
+#' on each feature. Alignment is done using "outer mergeing";
+#' missing values are filled with zeros. 
 #' 
 #' @param tb1 A one-way table with integer counts.
 #' @param tb2 A one-way table with integer counts.
@@ -50,26 +61,40 @@ tables.HC = function(tb1,tb2, alpha = 0.45, stbl = TRUE) {
 #' @examples
 #' tb1 = table(c(1,1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,5,6,6,7,7,7))
 #' tb2 = table(c(1,1,1,1,1,1,1,1,1,2,3,3,3,3,3,4,4,4,5,5,5,6))
-#' PV = tables.pval(tb1, tb2) # compute P-values 
-#' HC.vals(PV$pv)  # combine P-values using the HC statistics
+#' PV = two.sample.pvals(tb1, tb2) # compute P-values 
+#' HC.vals(PV$pv)  # use the Higher-Criticism to combine the P-values 
+#'                 # for a global test
 #'
-#' text1 = "But our fish said, No ! No ! Make that cat go away ! 
-#'            Tell that Cat in the Hat You do NOT want to play . 
-#'            He should not be here . He should not be about . 
-#'          He should not be here When your mother is out !"
-#' text2 = "Now ! Now ! Have no fear . Have no fear! said the cat . 
-#'            My tricks are not bad , Said the Cat in the Hat . Why , 
-#'             we can have Lots of good fun, if you wish, with a game
-#'              that I call UP - UP - UP with a fish !"
+#' # Can be used to check similarity of word-frequencies in texts:
+#'
+#' text1 = "On the day House Democrats opened an impeachment inquiry of 
+#' President Trump last week, Pete Buttigieg was being grilled by Iowa
+#' voters on other subjects: how to loosen the grip of the rich on government, 
+#' how to restore science to policymaking, how to reduce child poverty. At an
+#' event in eastern Iowa, a woman rose to say that her four adult children
+#' were `stuck' in life, unable to afford what she had in the 1980s when a 
+#' $10-an-hour job paid for rent, utilities and an annual vacation."
+#'
+#' text2 = "How can the federal government help our young people that want to
+#' do whats right and to get to those things that their parents worked so hard
+#' for? the voter asked. This is the conversation Mr. Buttigieg wants to have. 
+#' Boasting a huge financial war chest but struggling in the polls, Mr.
+#' Buttigieg is now staking his presidential candidacy on Iowa, and particularly
+#' on connecting with rural white voters who want to talk about personal
+#' concerns more than impeachment. In doing so, Mr. Buttigieg is also trying to
+#' show how Democrats can win back counties that flipped from Barack Obama to 
+#' Donald Trump in 2016 — there are more of them in Iowa than any other state — 
+#' by focusing, he said, on “the things that are going to affect folks’ lives in
+#' a concrete way."
 #'
 #' tb1 = table(strsplit(tolower(text1),' '))
 #' tb2 = table(strsplit(tolower(text2),' '))
-#' pv = tables.pval(tb1,tb2)
+#' pv = two.sample.pvals(tb1,tb2)
 #' HC.vals(pv$pv)
 #'
 #'
 #' @export
-tables.pval = function(tb1, tb2) {
+two.sample.pvals = function(tb1, tb2) {
     mrg = merge(tb1,tb2, all = TRUE, by = 1) #merge tables 
     mrg[is.na(mrg)] <- 0  # replace missing values with 0
 
@@ -98,10 +123,10 @@ tables.pval = function(tb1, tb2) {
     mrg
 }
 
-#' Higher Criticism Statistics
+#' Higher Criticism (HC) test 
 #' @description
-#' Compute HC stasitic and p-value attaining it from a list of P-values.
-#' Can be used with function \code{\link{tables.pval}} to 
+#' Compute the HC stasitic and the HC threshold given a list of P-values.
+#' Can be used with function \code{\link{two.sample.pvals}} to 
 #' get a list of p-values discriminating each feature
 #' between the two tables. 
 #' 
@@ -121,22 +146,33 @@ tables.pval = function(tb1, tb2) {
 #' @examples
 #' tb1 = table(c(1,1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,5,6,6,7,7,7))
 #' tb2 = table(c(1,1,1,1,1,1,1,1,1,2,3,3,3,3,3,4,4,4,5,5,5,6))
-#' PV = tables.pval(tb1, tb2) # compute P-values 
+#' PV = two.sample.pvals(tb1, tb2) # compute P-values 
 #' HC.vals(PV$pv)  # combine P-values using the HC statistics
 #'
+#' # Can be used to check similarity of word-frequencies in texts:
+#' text1 = "On the day House Democrats opened an impeachment inquiry of 
+#' President Trump last week, Pete Buttigieg was being grilled by Iowa
+#' voters on other subjects: how to loosen the grip of the rich on government, 
+#' how to restore science to policymaking, how to reduce child poverty. At an
+#' event in eastern Iowa, a woman rose to say that her four adult children
+#' were `stuck' in life, unable to afford what she had in the 1980s when a 
+#' $10-an-hour job paid for rent, utilities and an annual vacation."
 #'
-#' text1 = "But our fish said, No ! No ! Make that cat go away ! 
-#'            Tell that Cat in the Hat You do NOT want to play . 
-#'            He should not be here . He should not be about . 
-#'          He should not be here When your mother is out !"
-#' text2 = "Now ! Now ! Have no fear . Have no fear! said the cat . 
-#'            My tricks are not bad , Said the Cat in the Hat . Why , 
-#'             we can have Lots of good fun, if you wish, with a game
-#'              that I call UP - UP - UP with a fish !"
+#' text2 = "How can the federal government help our young people that want to
+#' do whats right and to get to those things that their parents worked so hard
+#' for? the voter asked. This is the conversation Mr. Buttigieg wants to have. 
+#' Boasting a huge financial war chest but struggling in the polls, Mr.
+#' Buttigieg is now staking his presidential candidacy on Iowa, and particularly
+#' on connecting with rural white voters who want to talk about personal
+#' concerns more than impeachment. In doing so, Mr. Buttigieg is also trying to
+#' show how Democrats can win back counties that flipped from Barack Obama to 
+#' Donald Trump in 2016 — there are more of them in Iowa than any other state — 
+#' by focusing, he said, on “the things that are going to affect folks’ lives in
+#' a concrete way."
 #'
 #' tb1 = table(strsplit(tolower(text1),' '))
 #' tb2 = table(strsplit(tolower(text2),' '))
-#' pv = tables.pval(tb1,tb2)
+#' pv = two.sample.pvals(tb1,tb2)
 #' HC.vals(pv$pv)
 #'
 #' @export

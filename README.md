@@ -13,20 +13,20 @@ seq = seq(1,n)
 P = 1 / seq  #sample from Zipf distribution
 P = P / sum(P)
 tb1 = data.frame(Feature = seq(1,n),  # sample 1
-      Freq = rmultinom(n = 1, prob = P, size = 10*n))
+      Freq = rmultinom(n = 1, prob = P, size = N))
 
-k = 0.05*n  # change few features:
+k = 0.05*n  # change a small number of features:
 seq[sample(seq,k)] <- seq[sample(seq,k)] # change k features
 Q = 1 / seq 
 Q = Q / sum(Q) 
 
 tb2 = data.frame(Feature = seq(1,n), # sample 2
-Freq = rmultinom(n = 1, prob = Q, size = 10*n))
+Freq = rmultinom(n = 1, prob = Q, size = N))
 
-PV = tables.pval(tb1, tb2) # compute P-values 
+PV = two.sample.pvals(tb1, tb2) # compute P-values 
 
 HC.vals(PV$pv)  # combine P-values using the HC statistic
 
 # The same result can be obtained using a single function call:
-tables.HC(tb1,tb2) 
+two.sample.HC(tb1,tb2) 
 ```

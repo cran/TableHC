@@ -1,5 +1,5 @@
 ---
-title: "Discriminating Frequency Counts Tables using Higher Criticism"
+title: "Discriminating Frequency Tables using Higher Criticism"
 author: "Alon Kipnis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -17,23 +17,45 @@ knitr::opts_chunk$set(
 ```
 
 This package implements an adpatation of the Higher-Criticism (HC) test to 
-discriminate two frequency counts (one-way) tables footnotes^[See David Donoho and Alon Kipnis *Higher Criticism for Discriminating Word-Frequency Tables and Testing Authorship* (2019)].
+discriminate two frequency tables footnotes^[See Kipnis A. *Higher Criticism for
+Discriminating Word-Frequency Tables and Testing Authorship* (2019)].
 
-The package consists of two main functions:
-- *tables.pvals* -- for comuting P-values of each feature in the two tables.
-- *HC.vals* -- for comuting the HC score of the P-values.
+The package includes two main functions:
+- *two.sample.pvals* -- produces a list of P-values, one for each feature in the
+  two tables.
+- *HC.vals* -- computes the HC score of the P-values.
 
-A third function *tables.HC* combines the two functions above so that the HC score of the two tables is obtained using a single function call.
+A third function *two.sample.HC* combines the two functions above so that the HC
+score of the two tables is obtained using a single function call.
 
 --- 
 ## Example: 
 
 ```
-text1 = "Should I stay or should I go ?"
-text2 = "I should stay . I should not go !"
+#' # Can be used to check similarity of word-frequencies in texts:
+#' text1 = "On the day House Democrats opened an impeachment inquiry of
+#'	  President Trump last week, Pete Buttigieg was being grilled by Iowa 
+#'	  voters on other subjects: how to loosen the grip of the rich on 
+#'	  government, how to restore science to policymaking, how to reduce child
+#'	  poverty. At an event in eastern Iowa, a woman rose to say that her four
+#'	  adult children were “stuck” in life, unable to afford what she had in 
+#'	  the 1980s when a $10-an-hour job paid for rent, utilities and an 
+#'	  annual vacation."
+#' text2 = "How can the federal government help our young people that want to do
+#'   what’s right and to get to those things that their parents worked so hard for?”
+#'   the voter asked. This is the conversation Mr. Buttigieg wants to have. 
+#'   Boasting a huge financial war chest but struggling in the polls, Mr. Buttigieg
+#'   is now staking his presidential candidacy on Iowa, and particularly on
+#'   connecting with rural white voters who want to talk about personal concerns 
+#'   more than impeachment. In doing so, Mr. Buttigieg is also trying to show how
+#'   Democrats can win back counties that flipped from Barack Obama to Donald
+#'   Trump in 2016 — there are more of them in Iowa than any other state — 
+#'   by focusing, he said, on “the things that are going to affect folks’
+#'   lives in a concrete way."
+
 tb1 = table(strsplit(tolower(text1),' '))
 tb2 = table(strsplit(tolower(text2),' '))
-pv = tables.pval(tb1,tb2)
+pv = two.sample.pvals(tb1,tb2)
 
 print(pv$pv)
 > [1] 1.0000 1.0000 0.2304 1.0000 1.0000 1.0000     NA 0.1936     NA
@@ -56,25 +78,26 @@ HC.vals(pv$pv)
 ```
 n = 1000  #number of features
 N = 10*n  #number of observations
+k = 0.1*n #number of perturbed features
 
 seq = seq(1,n)
-P = 1 / seq  #sample from Zipf law distribution
+P = 1 / seq  #sample from a Zipf law distribution
 P = P / sum(P)
 tb1 = data.frame(Feature = seq(1,n),  # sample 1
-      Freq = rmultinom(n = 1, prob = P, size = 10*n))
+      Freq = rmultinom(n = 1, prob = P, size = N))
 
-k = 0.1*n # nuber of features to change
+
 seq[sample(seq,k)] <- seq[sample(seq,k)] 
 Q = 1 / seq 
 Q = Q / sum(Q)  
 
 tb2 = data.frame(Feature = seq(1,n), # sample 2
-      Freq = rmultinom(n = 1, prob = Q, size = 10*n))
+      Freq = rmultinom(n = 1, prob = Q, size = N))
 
-PV = tables.pval(tb1, tb2)  #compute P-values
+PV = two.sample.pvals(tb1, tb2)  #compute P-values
 
 HC.vals(PV$pv)  # HC test
 
 # can also test using a single function call
-tables.HC(tb1,tb2) 
+two.sample.HC(tb1,tb2) 
 ```

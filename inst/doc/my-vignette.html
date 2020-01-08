@@ -12,9 +12,9 @@
 
 <meta name="author" content="Alon Kipnis" />
 
-<meta name="date" content="2019-11-05" />
+<meta name="date" content="2019-12-21" />
 
-<title>Discriminating Frequency Counts Tables using Higher Criticism</title>
+<title>Discriminating Frequency Tables using Higher Criticism</title>
 
 
 
@@ -212,23 +212,42 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 
-<h1 class="title toc-ignore">Discriminating Frequency Counts Tables using Higher Criticism</h1>
+<h1 class="title toc-ignore">Discriminating Frequency Tables using Higher Criticism</h1>
 <h4 class="author"><em>Alon Kipnis</em></h4>
-<h4 class="date"><em>2019-11-05</em></h4>
+<h4 class="date"><em>2019-12-21</em></h4>
 
 
 
-<p>This package implements an adpatation of the Higher-Criticism (HC) test to discriminate two frequency counts (one-way) tables footnotes<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
-<p>The package consists of two main functions: - <em>tables.pvals</em> – for comuting P-values of each feature in the two tables. - <em>HC.vals</em> – for comuting the HC score of the P-values.</p>
-<p>A third function <em>tables.HC</em> combines the two functions above so that the HC score of the two tables is obtained using a single function call.</p>
+<p>This package implements an adpatation of the Higher-Criticism (HC) test to discriminate two frequency tables footnotes<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p>The package includes two main functions: - <em>two.sample.pvals</em> – produces a list of P-values, one for each feature in the two tables. - <em>HC.vals</em> – computes the HC score of the P-values.</p>
+<p>A third function <em>two.sample.HC</em> combines the two functions above so that the HC score of the two tables is obtained using a single function call.</p>
 <hr />
 <div id="example" class="section level2">
 <h2>Example:</h2>
-<pre><code>text1 = &quot;Should I stay or should I go ?&quot;
-text2 = &quot;I should stay . I should not go !&quot;
+<pre><code>#&#39; # Can be used to check similarity of word-frequencies in texts:
+#&#39; text1 = &quot;On the day House Democrats opened an impeachment inquiry of
+#&#39;    President Trump last week, Pete Buttigieg was being grilled by Iowa 
+#&#39;    voters on other subjects: how to loosen the grip of the rich on 
+#&#39;    government, how to restore science to policymaking, how to reduce child
+#&#39;    poverty. At an event in eastern Iowa, a woman rose to say that her four
+#&#39;    adult children were “stuck” in life, unable to afford what she had in 
+#&#39;    the 1980s when a $10-an-hour job paid for rent, utilities and an 
+#&#39;    annual vacation.&quot;
+#&#39; text2 = &quot;How can the federal government help our young people that want to do
+#&#39;   what’s right and to get to those things that their parents worked so hard for?”
+#&#39;   the voter asked. This is the conversation Mr. Buttigieg wants to have. 
+#&#39;   Boasting a huge financial war chest but struggling in the polls, Mr. Buttigieg
+#&#39;   is now staking his presidential candidacy on Iowa, and particularly on
+#&#39;   connecting with rural white voters who want to talk about personal concerns 
+#&#39;   more than impeachment. In doing so, Mr. Buttigieg is also trying to show how
+#&#39;   Democrats can win back counties that flipped from Barack Obama to Donald
+#&#39;   Trump in 2016 — there are more of them in Iowa than any other state — 
+#&#39;   by focusing, he said, on “the things that are going to affect folks’
+#&#39;   lives in a concrete way.&quot;
+
 tb1 = table(strsplit(tolower(text1),&#39; &#39;))
 tb2 = table(strsplit(tolower(text2),&#39; &#39;))
-pv = tables.pval(tb1,tb2)
+pv = two.sample.pvals(tb1,tb2)
 
 print(pv$pv)
 &gt; [1] 1.0000 1.0000 0.2304 1.0000 1.0000 1.0000     NA 0.1936     NA
@@ -250,32 +269,33 @@ HC.vals(pv$pv)
 <h2>Example 2</h2>
 <pre><code>n = 1000  #number of features
 N = 10*n  #number of observations
+k = 0.1*n #number of perturbed features
 
 seq = seq(1,n)
-P = 1 / seq  #sample from Zipf law distribution
+P = 1 / seq  #sample from a Zipf law distribution
 P = P / sum(P)
 tb1 = data.frame(Feature = seq(1,n),  # sample 1
-      Freq = rmultinom(n = 1, prob = P, size = 10*n))
+      Freq = rmultinom(n = 1, prob = P, size = N))
 
-k = 0.1*n # nuber of features to change
+
 seq[sample(seq,k)] &lt;- seq[sample(seq,k)] 
 Q = 1 / seq 
 Q = Q / sum(Q)  
 
 tb2 = data.frame(Feature = seq(1,n), # sample 2
-      Freq = rmultinom(n = 1, prob = Q, size = 10*n))
+      Freq = rmultinom(n = 1, prob = Q, size = N))
 
-PV = tables.pval(tb1, tb2)  #compute P-values
+PV = two.sample.pvals(tb1, tb2)  #compute P-values
 
 HC.vals(PV$pv)  # HC test
 
 # can also test using a single function call
-tables.HC(tb1,tb2) </code></pre>
+two.sample.HC(tb1,tb2) </code></pre>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>See David Donoho and Alon Kipnis <em>Higher Criticism for Discriminating Word-Frequency Tables and Testing Authorship</em> (2019)<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>See Kipnis A. <em>Higher Criticism for Discriminating Word-Frequency Tables and Testing Authorship</em> (2019)<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
